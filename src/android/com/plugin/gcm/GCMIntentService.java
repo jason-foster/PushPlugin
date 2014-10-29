@@ -73,8 +73,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                 PushPlugin.sendExtras(extras);
                 // Send a notification if there is a message
                 if ((extras.getString("message") != null && extras.getString("message").length() != 0) ||
-                    (extras.getString("title") != null && extras.getString("title").length() != 0) || // support for pushwoosh
-                    (extras.getString("default") != null && extras.getString("default").length() != 0)) { // support for amazon sns
+                    (extras.getString("title") != null && extras.getString("title").length() != 0)) // support for pushwoosh
                     createNotification(context, extras);
                 }
             }
@@ -100,17 +99,25 @@ public class GCMIntentService extends GCMBaseIntentService {
 			} catch (NumberFormatException e) {}
 		}
 		
+        String message = extras.getString("message");
+        String title = null;
+        if (message != null) {
+            title = extras.getString("title");                
+        } else {
+            // Check to see if there is a title and header extra like pushwoosh would send
+            message = extras.getString("title"); 
+            title = extras.getString("header");
+        }
 		NotificationCompat.Builder mBuilder =
 			new NotificationCompat.Builder(context)
 				.setDefaults(defaults)
 				.setSmallIcon(context.getApplicationInfo().icon)
 				.setWhen(System.currentTimeMillis())
-				.setContentTitle(extras.getString("title"))
-				.setTicker(extras.getString("title"))
+				.setContentTitle(title)
+				.setTicker(title)
 				.setContentIntent(contentIntent)
 				.setAutoCancel(true);
 
-		String message = extras.getString("message");
 		if (message != null) {
 			mBuilder.setContentText(message);
 		} else {
