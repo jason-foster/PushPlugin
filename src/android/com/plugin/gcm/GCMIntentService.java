@@ -70,9 +70,11 @@ public class GCMIntentService extends GCMBaseIntentService {
 			}
 			else {
 				extras.putBoolean("foreground", false);
-
+                PushPlugin.sendExtras(extras);
                 // Send a notification if there is a message
-                if (extras.getString("message") != null && extras.getString("message").length() != 0) {
+                if ((extras.getString("message") != null && extras.getString("message").length() != 0) ||
+                    (extras.getString("title") != null && extras.getString("title").length() != 0) || // support for pushwoosh
+                    (extras.getString("default") != null && extras.getString("default").length() != 0)) { // support for amazon sns
                     createNotification(context, extras);
                 }
             }
